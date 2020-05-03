@@ -1,0 +1,6 @@
+__pycache__
+venv
+*.tar.gz
+*.*swp
+.idea
+.vscode

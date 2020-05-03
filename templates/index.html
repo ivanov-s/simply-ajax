@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+    <form action="/send" id="form1" method="post">
+        {{ form.csrf_token }}
+        {{ form.name.label }} {{ form.name() }}
+        {{ form.phone.label }} {{ form.phone() }}
+
+        <input type="submit" value="Отправить"/>
+    </form>
+
+    <div id="msg"></div>
+    <script>
+        /* переопределить поведение кнопки "Отправить" */
+        $(document).ready(function () {
+            $("#form1" ).submit(function( event ) {
+              sendAjaxForm("form1", "msg");
+              event.preventDefault();
+            });
+        });
+
+        /* отправка формы через ajax */
+        function sendAjaxForm(form_ajax, msg) {
+            var form = $("#" + form_ajax);
+            $.ajax({
+                type: form.attr('method'),
+                url: form.attr('action'),
+                data: form.serialize(), // serializes the form's elements.
+                success: function (response) {
+                    var json = jQuery.parseJSON(response);
+                    $('#' + msg).html(json.msg);
+                    if (json.success == 'true') {
+                        form.trigger('reset');
+                    }
+                    else
+                    {
+                        alert("Что-то пошло не так!");
+                        console.log("Ошибка");
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+    </script>
+{% endblock %}
